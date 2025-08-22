@@ -1,0 +1,102 @@
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-family: sans-serif;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(15, 15, 15);
+}
+
+.container {
+  width: 95%;
+  height: 95%;
+}
+
+#content {
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+}
+
+#content main {
+  border: 1px solid cyan;
+  border-radius: 7px;
+  color: darkcyan;
+  padding: 10px;
+}
+
+#content main #start-btn {
+  padding: 10px;
+  color: white;
+  background-color: darkcyan;
+  border-radius: 5px;
+  font-size: 1rem;
+  width: 100px;
+  margin: 20px;
+}
+
+#content main #restart-btn {
+  padding: 10px;
+  color: white;
+  background-color: darkcyan;
+  border-radius: 5px;
+  font-size: 1rem;
+  width: max-content;
+  margin: 20px;
+  display: none;
+}
+
+#content main #upload-books {
+  padding: 10px;
+  color: white;
+  background-color: darkcyan;
+  border-radius: 5px;
+  font-size: 1rem;
+  width: max-content;
+  margin: 20px;
+  display: none;
+}
+
+#content main #upload-books:disabled {
+  background-color: rgb(61, 61, 61);
+  color: black;
+  cursor: not-allowed;
+}
+
+#content aside {
+  border: 1px solid cyan;
+  border-radius: 7px;
+}
+#console {
+  grid-column: span 2;
+  border: 1px solid cyan;
+  border-radius: 7px;
+  background-color: black;
+  overflow-y: scroll;
+  color: darkcyan;
+  padding: 10px;
+}
+
+#console::-webkit-scrollbar {
+  background-color: transparent;
+  width: 10px;
+  border-radius: 1rem;
+}
+
+#console::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+#console::-webkit-scrollbar-thumb {
+  background-color: cyan;
+  border-radius: 1rem;
+}
