@@ -34,7 +34,7 @@ export class Bot {
     } catch (error) {
       console.log("Error: ", error);
       console.log("Error: an error occured while trying to upload books!");
-      this.socket.emit({
+      this.socket.emit("console-msg", {
         error: "an error occured while trying to upload books!",
       });
     }
@@ -47,19 +47,19 @@ export class Bot {
     } catch (error) {
       console.log("Error: ", error);
       console.log("Error: an error occured while trying to start bot!");
-      this.socket.emit({
+      this.socket.emit("console-msg", {
         error: "an error occured while trying to start bot! ",
       });
     }
   }
 
-  restart() {
+  restart(email, password) {
     try {
       return this.botServe.restart(email, password);
     } catch (error) {
       console.log("Error: ", error);
       console.log("Error: an error occured while trying to restart bot!");
-      this.socket.emit({
+      this.socket.emit("console-msg", {
         error: "an error occured while trying to restart bot! ",
       });
     }

@@ -18,7 +18,7 @@ export const socketConnection = () => {
         socket.emit("console-msg", "Starting bot...");
         bot.start("ebookquetnetwork@gmail.com", "123456");
       } else {
-        bot.uploadBook(socket, true);
+        bot.uploadBook(true);
         socket.emit("console-msg", "uploading...");
       }
     });
