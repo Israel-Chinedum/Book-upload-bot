@@ -1,4 +1,4 @@
-import { BotServices } from "./bot.services.js";
+import { BotServices } from "./bot.service.js";
 
 export class Bot {
   xlPath;
@@ -30,7 +30,7 @@ export class Bot {
   //=====Upload books=====
   uploadBook() {
     try {
-      return this.botServe.uploadBook(uploadBtn);
+      return this.botServe.uploadBook();
     } catch (error) {
       console.log("Error: ", error);
       console.log("Error: an error occured while trying to upload books!");

@@ -72,6 +72,19 @@ body {
   cursor: not-allowed;
 }
 
+#content main .input {
+  padding: 10px;
+  border-radius: 5px;
+  outline-color: cyan;
+  font-size: 1rem;
+  color: cyan;
+  background-color: rgb(71, 71, 71);
+}
+
+#content main .input::placeholder {
+  color: cyan;
+}
+
 #content aside {
   border: 1px solid cyan;
   border-radius: 7px;

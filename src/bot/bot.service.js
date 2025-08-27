@@ -1,6 +1,12 @@
 import { chromium } from "playwright";
 import { getFileNames } from "../utils/get-filenames.util.js";
-import { getGenre } from "../utils/get-genre.util.js";
+import { MetaDataApi } from "../utils/meta-data-api.util.js";
+import { Filer } from "../utils/filer.util.js";
+import { SocketServices } from "../sockets/socket.service.js";
+
+const socketServe = new SocketServices();
+const filer = new Filer({ path: "./proof.json" });
+const meta = new MetaDataApi();
 
 export class BotServices {
   page;
@@ -24,29 +30,27 @@ export class BotServices {
     await this.page.fill('input[name="email"]', email);
     await this.page.fill('input[name="password"]', password);
     await Promise.all([
-      this.page.waitForSelector(".trailer button", { state: "visible" }),
+      this.page.waitForSelector(".trailer button", { timeout: 0 }),
       this.page.click("button"),
     ]);
   }
 
-  async uploadBook(uploadBtn = false) {
-    if (uploadBtn) {
-      await this.page.screenshot({
-        path: `./screenshots/proof-${Date.now()}.png`,
-        fullPage: true,
-      });
-    }
+  async uploadBook() {
+    await this.page.screenshot({
+      path: `./screenshots/proof-${Date.now()}.png`,
+      fullPage: true,
+    });
 
     await Promise.all([
-      this.page.waitForNavigation({ timeout: 60000 }),
+      this.page.waitForNavigation({ timeout: 0 }),
       this.page.click(".trailer button"),
     ]);
 
-    const fileInput = this.page.locator('input[type="file"]');
+    const fileInput = this.page.locator('input[type="file"][name="doc"]');
     await fileInput.setInputFiles("../book uploads.xlsx");
 
     const fileNames = await getFileNames(this.path, this.socket);
-    const genre = await getGenre(this.xlPath, this.socket);
+    const genre = await meta.getGenre(this.xlPath, this.socket);
 
     await this.page.waitForTimeout(5000);
 
@@ -61,17 +65,18 @@ export class BotServices {
       const fileName = await this.page
         .locator(`input[name="import[${i}][title]"]`)
         .inputValue();
+      console.log("FILE NAME: ", fileName);
 
       if (fileName) {
         const pdf = fileNames.filter(
           (name) =>
             name.toLowerCase().includes(fileName.toLowerCase()) &&
-            name.toLowerCase().includes(".pdf")
+            name.toLowerCase().endsWith(".pdf")
         );
         const photo = fileNames.filter(
           (name) =>
             name.toLowerCase().includes(fileName.toLowerCase()) &&
-            !name.toLowerCase().includes(".pdf")
+            !name.toLowerCase().endsWith(".pdf")
         );
 
         //=====CHECK IF FILE EXISTS=====
@@ -109,10 +114,14 @@ export class BotServices {
         }
 
         const options = await this.page
-          .locator(`select[name="import[${i}][genre]"]`)
+          .locator(`select[name="import[${i}][genre]"] option`)
           .allTextContents();
 
-        if (options[0].toLowerCase().includes(genre[i].toLowerCase())) {
+        if (
+          options
+            .map((opt) => opt.toLowerCase())
+            .includes(genre[i].toLowerCase())
+        ) {
           await this.page
             .locator(`select[name="import[${i}][genre]"]`)
             .selectOption({ label: `${genre[i]}` });
@@ -125,30 +134,62 @@ export class BotServices {
         }
       }
     }
-    await this.page.click('text="Import All"');
+
+    Promise.all([
+      await this.page.click('text="Import All"'),
+      await this.page.waitForNavigation({ timeout: 0 }),
+    ]);
+
+    await filer.sign();
+
+    await socketServe.G_sheet().colorUploadedRows();
+
+    const data = await socketServe.G_sheet().getSheetData();
+    const response = await meta.updateSheet({
+      xlPath: "../book uploads.xlsx",
+      data,
+    });
+    this.socket.emit("console-msg", response);
+
     this.numberOfBooksUploaded += 10;
     console.log(`Done! ${this.numberOfBooksUploaded} have been uploaded!`);
     this.socket.emit(
       "console-msg",
       `Done! ${this.numberOfBooksUploaded} have been uploaded!`
     );
-    this.socket.emit("done");
+    this.socket.emit("done!");
+
+    this.uploadBook();
   }
 
   async start(email, password) {
-    const browser = await chromium.launch({ headless: false });
-    const context = await browser.newContext();
-    this.page = await context.newPage();
-    this.page.setDefaultTimeout(60000);
+    try {
+      const browser = await chromium.launch({ headless: false });
+      const context = await browser.newContext();
+      this.page = await context.newPage();
+      this.page.setDefaultTimeout(0);
 
-    this.socket.emit("console-msg", "Logging in...");
-    await this.login(email, password);
-    this.socket.emit("console-msg", "logged in! ✔");
-    await this.uploadBook();
+      this.socket.emit("console-msg", "Logging in...");
+      await this.login(email, password);
+      this.socket.emit("console-msg", "logged in! ✔");
+      await this.uploadBook();
+    } catch (error) {
+      console.log("Error: ", error);
+      this.socket.emit("console-msg", {
+        error: "an error occured while bot was running!",
+      });
+    }
   }
 
   async restart(email, password) {
-    this.page.close();
-    this.start(email, password);
+    try {
+      this.page && (await this.page.close());
+      await this.start(email, password);
+    } catch (error) {
+      console.log("Error: ", error);
+      this.socket.emit("console-msg", {
+        error: "an error occured while trying to restart bot!",
+      });
+    }
   }
 }

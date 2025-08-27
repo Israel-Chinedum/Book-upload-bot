@@ -4,6 +4,8 @@ const startBtn = document.querySelector("#start-btn");
 const msgConsole = document.querySelector("#console");
 const uploadBks = document.querySelector("#upload-books");
 const restartBtn = document.querySelector("#restart-btn");
+const sheetTitle = document.querySelector("#sheet-title");
+const spreadsheetId = document.querySelector("#spreadsheet-id");
 
 const createText = (text, color = "darkcyan") => {
   const p = document.createElement("p");
@@ -17,7 +19,10 @@ const createText = (text, color = "darkcyan") => {
 };
 
 startBtn.addEventListener("click", () => {
-  socket.emit("start-bot");
+  socket.emit("start-bot", {
+    sheetTitle: sheetTitle.value,
+    spreadsheetId: spreadsheetId.value,
+  });
   startBtn.style.display = "none";
   restartBtn.style.display = "block";
   uploadBks.style.display = "block";
@@ -25,12 +30,19 @@ startBtn.addEventListener("click", () => {
 });
 
 restartBtn.addEventListener("click", () => {
-  socket.emit("restart-bot");
+  socket.emit("restart-bot", {
+    sheetTitle: sheetTitle.value,
+    spreadsheetId: spreadsheetId.value,
+  });
   uploadBks.disabled = true;
 });
 
 uploadBks.addEventListener("click", () => {
-  socket.emit("start-bot", false);
+  socket.emit("start-bot", {
+    initial: false,
+    sheetTitle: sheetTitle.value,
+    spreadsheetId: spreadsheetId.value,
+  });
   uploadBks.disabled = true;
 });
 
@@ -54,4 +66,6 @@ socket.on("console-msg", (msg) => {
   } else {
     msgConsole.appendChild(createText("\n" + msg));
   }
+
+  msgConsole.scrollTo({ top: msgConsole.scrollHeight, behavior: "smooth" });
 });
