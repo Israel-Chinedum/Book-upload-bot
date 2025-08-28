@@ -29,11 +29,18 @@ export class SocketServices {
       return;
     }
 
+    console.log("Retrieving meta data for books...");
+    socket.emit("console-msg", "Retrieving meta data for books...");
+
     this.sheetTitle = sheetTitle;
     this.spreadsheetId = spreadsheetId;
     const sheetData = this.G_sheet(sheetTitle, spreadsheetId);
 
     const data = await sheetData.getSheetData();
+
+    console.log("Updating excel upload sheet...");
+    socket.emit("console-msg", "Updating excel upload sheet...");
+
     const response = await meta.updateSheet({
       xlPath: "../book uploads.xlsx",
       data,
@@ -60,11 +67,18 @@ export class SocketServices {
       return;
     }
 
+    console.log("Retrieving meta data for books...");
+    socket.emit("console-msg", "Retrieving meta data for books...");
+
     this.sheetTitle = sheetTitle;
     this.spreadsheetId = spreadsheetId;
     const sheetData = this.G_sheet(sheetTitle, spreadsheetId);
 
     const data = await sheetData.getSheetData();
+
+    console.log("Updating excel upload sheet...");
+    socket.emit("console-msg", "Updating excel upload sheet...");
+
     const response = await meta.updateSheet({
       xlPath: "../book uploads.xlsx",
       data,
