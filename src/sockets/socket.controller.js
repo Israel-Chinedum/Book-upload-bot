@@ -1,8 +1,6 @@
 import { io } from "../server.js";
-import { SocketServices } from "./socket.service.js";
+import { socketServe } from "./socket.service.js";
 import { Bot } from "../bot/bot.controller.js";
-
-const socketServe = new SocketServices();
 
 export const socketConnection = () => {
   io.on("connection", (socket) => {
@@ -10,7 +8,7 @@ export const socketConnection = () => {
 
     const bot = new Bot({
       xlPath: "../book uploads.xlsx",
-      path: "../books/sheet 5/401-500",
+      path: "../../books 4/04/sheet 5/Mishael/current/501-600",
       url: "https://ebookquet.com/admin",
       socket,
     });

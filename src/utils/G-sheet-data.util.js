@@ -101,11 +101,13 @@ export class GSheetData {
   async colorUploadedRows() {
     const data = await filer.readFile();
     for (let i of JSON.parse(data)) {
-      this.setRowColors({
+      await this.setRowColors({
         startRowIndex: i.index - 1,
         endRowIndex: i.index,
         backgroundColor: { red: 1 },
       });
+
+      console.log("Row", i.index, "has been colored!");
     }
   }
 
@@ -127,26 +129,31 @@ export class GSheetData {
       const sheets = this.authorize();
       const sheetId = await this.getSheetId();
       !sheetId && { error: "could not get sheetId!" };
+
+      const requestBody = {
+        requests: [
+          {
+            repeatCell: {
+              range: {
+                sheetId,
+                startRowIndex,
+                endRowIndex,
+              },
+              cell: {
+                userEnteredFormat: { backgroundColor },
+              },
+              fields: "userEnteredFormat.backgroundColor",
+            },
+          },
+        ],
+      };
+
+      console.log("setting row index to red!");
       await sheets.spreadsheets.batchUpdate({
         spreadsheetId: this.spreadsheetId,
-        requestBody: {
-          requests: [
-            {
-              repeatCell: {
-                range: {
-                  sheetId,
-                  startRowIndex,
-                  endRowIndex,
-                },
-                cell: {
-                  userEnteredFormat: { backgroundColor },
-                },
-                fields: "userEnteredFormat.backgroundColor",
-              },
-            },
-          ],
-        },
+        requestBody,
       });
+      console.log("row color has been set!");
     } catch (error) {
       console.log("Error: ", error);
       console.log("An error occured while trying to set rows!");

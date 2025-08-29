@@ -2,7 +2,7 @@ import { MetaDataApi } from "../utils/meta-data-api.util.js";
 import { GSheetData } from "../utils/G-sheet-data.util.js";
 const meta = new MetaDataApi();
 
-export class SocketServices {
+class SocketServices {
   sheetTitle;
   spreadsheetId;
 
@@ -90,3 +90,5 @@ export class SocketServices {
     bot.restart("ebookquetnetwork@gmail.com", "123456");
   }
 }
+
+export const socketServe = new SocketServices();

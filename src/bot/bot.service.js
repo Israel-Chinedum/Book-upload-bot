@@ -2,9 +2,9 @@ import { chromium } from "playwright";
 import { getFileNames } from "../utils/get-filenames.util.js";
 import { MetaDataApi } from "../utils/meta-data-api.util.js";
 import { Filer } from "../utils/filer.util.js";
-import { SocketServices } from "../sockets/socket.service.js";
+import { socketServe } from "../sockets/socket.service.js";
+import { discovery } from "googleapis/build/src/apis/discovery/index.js";
 
-const socketServe = new SocketServices();
 const filer = new Filer({ path: "./proof.json" });
 const meta = new MetaDataApi();
 
@@ -117,14 +117,14 @@ export class BotServices {
           .locator(`select[name="import[${i}][genre]"] option`)
           .allTextContents();
 
-        if (
-          options
-            .map((opt) => opt.toLowerCase())
-            .includes(genre[i].toLowerCase())
-        ) {
+        const currGenre = options.find((opt) =>
+          opt.toLowerCase().includes(genre[i].toLowerCase())
+        );
+
+        if (currGenre) {
           await this.page
             .locator(`select[name="import[${i}][genre]"]`)
-            .selectOption({ label: `${genre[i]}` });
+            .selectOption({ label: `${currGenre}` });
         } else {
           console.log(`Genre "${genre[i]}" not found! skipping...`);
           this.socket.emit(
@@ -149,6 +149,9 @@ export class BotServices {
       xlPath: "../book uploads.xlsx",
       data,
     });
+
+    await this.page.waitForTimeout(5000);
+
     this.socket.emit("console-msg", response);
 
     this.numberOfBooksUploaded += 10;
