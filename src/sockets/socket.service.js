@@ -7,7 +7,7 @@ export class SocketServices {
   spreadsheetId;
 
   G_sheet(sheetTitle, spreadsheetId) {
-    const sheet_title = sheetTitle || this.spreadsheetId;
+    const sheet_title = sheetTitle || this.sheetTitle;
     const spreadsheet_Id = spreadsheetId || this.spreadsheetId;
 
     const sheetData = new GSheetData({

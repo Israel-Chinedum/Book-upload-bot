@@ -63,7 +63,7 @@ export class Filer {
       if (!data.toString()) {
         await this.writeFile({
           path: "./proof.json",
-          data: JSON.stringify(JSON.parse([worksheetData])),
+          data: JSON.stringify([JSON.parse(worksheetData)]),
         });
       } else {
         const proofData = await this.readFile("./proof.json");
