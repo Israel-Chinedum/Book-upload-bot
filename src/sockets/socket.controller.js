@@ -8,7 +8,7 @@ export const socketConnection = () => {
 
     const bot = new Bot({
       xlPath: "../book uploads.xlsx",
-      path: "../../books 4/04/sheet 5/Mishael/current/501-600",
+      path: "../501-600",
       url: "https://ebookquet.com/admin",
       socket,
     });

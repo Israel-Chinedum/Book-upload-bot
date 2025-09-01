@@ -25,6 +25,27 @@ export class MetaDataApi {
     }
   }
 
+  async getDesc(xlPath, socket) {
+    try {
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.readFile(xlPath);
+
+      const sheet = workbook.getWorksheet(1);
+
+      const descArr = [];
+
+      sheet.eachRow((row, rowNumber) => {
+        if (rowNumber != 1) {
+          descArr.push(row.values[2]);
+        }
+      });
+      return descArr;
+    } catch (error) {
+      console.log("Error: ", error);
+      socket.emit("console-msg", "Error: unable to get worksheet data!");
+    }
+  }
+
   async updateSheet({ xlPath, data }) {
     const rows = data.sheetData;
 

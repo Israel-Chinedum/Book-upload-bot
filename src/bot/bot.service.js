@@ -3,7 +3,7 @@ import { getFileNames } from "../utils/get-filenames.util.js";
 import { MetaDataApi } from "../utils/meta-data-api.util.js";
 import { Filer } from "../utils/filer.util.js";
 import { socketServe } from "../sockets/socket.service.js";
-import { discovery } from "googleapis/build/src/apis/discovery/index.js";
+import { bestMatch } from "../utils/compare.util.js";
 
 const filer = new Filer({ path: "./proof.json" });
 const meta = new MetaDataApi();
@@ -51,6 +51,7 @@ export class BotServices {
 
     const fileNames = await getFileNames(this.path, this.socket);
     const genre = await meta.getGenre(this.xlPath, this.socket);
+    const desc = await meta.getDesc(this.xlPath, this.socket);
 
     await this.page.waitForTimeout(5000);
 
@@ -68,24 +69,59 @@ export class BotServices {
       console.log("FILE NAME: ", fileName);
 
       if (fileName) {
-        const pdf = fileNames.filter(
-          (name) =>
+        const pdf = fileNames.filter((name) => {
+          if (
             name.toLowerCase().includes(fileName.toLowerCase()) &&
             name.toLowerCase().endsWith(".pdf")
-        );
-        const photo = fileNames.filter(
-          (name) =>
+          ) {
+            return name;
+          }
+          if (
+            `The ${name}`.toLowerCase().includes(fileName.toLowerCase()) &&
+            name.toLowerCase().endsWith(".pdf")
+          ) {
+            return name;
+          }
+
+          if (
+            `A ${name}`.toLowerCase().includes(fileName.toLowerCase()) &&
+            name.toLowerCase().endsWith(".pdf")
+          ) {
+            return name;
+          }
+        });
+        const photo = fileNames.filter((name) => {
+          if (
             name.toLowerCase().includes(fileName.toLowerCase()) &&
             !name.toLowerCase().endsWith(".pdf")
-        );
+          ) {
+            return name;
+          }
+          if (
+            `The ${name}`.toLowerCase().includes(fileName.toLowerCase()) &&
+            !name.toLowerCase().endsWith(".pdf")
+          ) {
+            return name;
+          }
+          if (
+            `A ${name}`.toLowerCase().includes(fileName.toLowerCase()) &&
+            !name.toLowerCase().endsWith(".pdf")
+          ) {
+            return name;
+          }
+        });
 
         //=====CHECK IF FILE EXISTS=====
         if (pdf.length) {
-          await fileInputSrc.setInputFiles(`${this.path}/${pdf[0]}`);
-          console.log({ fileName, "OG-fileName": pdf[0], index: i });
+          let mainPDF = pdf[0];
+          if (pdf.length > 1) {
+            mainPDF = bestMatch(pdf, desc[i]);
+          }
+          await fileInputSrc.setInputFiles(`${this.path}/${mainPDF}`);
+          console.log({ fileName, "OG-fileName": mainPDF, index: i });
           this.socket.emit("console-msg", {
             fileName,
-            "OG-fileName": pdf[0],
+            "OG-fileName": mainPDF,
             index: i,
           });
         } else {
@@ -97,11 +133,15 @@ export class BotServices {
           });
         }
         if (photo.length) {
-          await fileInputPhoto.setInputFiles(`${this.path}/${photo[0]}`);
-          console.log({ fileName, "OG-fileName": photo[0], index: i });
+          let mainPhoto = photo[0];
+          if (photo.length > 1) {
+            mainPhoto = bestMatch(photo, desc[i]);
+          }
+          await fileInputPhoto.setInputFiles(`${this.path}/${mainPhoto}`);
+          console.log({ fileName, "OG-fileName": mainPhoto, index: i });
           this.socket.emit("console-msg", {
             fileName,
-            "OG-fileName": photo[0],
+            "OG-fileName": mainPhoto,
             index: i,
           });
         } else {
@@ -118,7 +158,7 @@ export class BotServices {
           .allTextContents();
 
         const currGenre = options.find((opt) =>
-          opt.toLowerCase().includes(genre[i].toLowerCase())
+          opt.toLowerCase().includes(genre[i].toLowerCase().trim())
         );
 
         if (currGenre) {
@@ -144,7 +184,21 @@ export class BotServices {
 
     await socketServe.G_sheet().colorUploadedRows();
 
+    this.numberOfBooksUploaded += 10;
+    console.log(`Done! ${this.numberOfBooksUploaded} have been uploaded!`);
+    this.socket.emit(
+      "console-msg",
+      `Done! ${this.numberOfBooksUploaded} have been uploaded!`
+    );
+
+    console.log("Retrieving meta data for books...");
+    socket.emit("console-msg", "Retrieving meta data for books...");
+
     const data = await socketServe.G_sheet().getSheetData();
+
+    console.log("Updating excel upload sheet...");
+    socket.emit("console-msg", "Updating excel upload sheet...");
+
     const response = await meta.updateSheet({
       xlPath: "../book uploads.xlsx",
       data,
@@ -153,14 +207,6 @@ export class BotServices {
     await this.page.waitForTimeout(5000);
 
     this.socket.emit("console-msg", response);
-
-    this.numberOfBooksUploaded += 10;
-    console.log(`Done! ${this.numberOfBooksUploaded} have been uploaded!`);
-    this.socket.emit(
-      "console-msg",
-      `Done! ${this.numberOfBooksUploaded} have been uploaded!`
-    );
-    this.socket.emit("done!");
 
     this.uploadBook();
   }
