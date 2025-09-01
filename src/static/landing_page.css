@@ -32,6 +32,30 @@ body {
   border-radius: 7px;
   color: darkcyan;
   padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#content main label {
+  width: 200px;
+}
+
+#content #path-div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 2px solid darkcyan;
+}
+
+#content #path-div button {
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  background-color: darkcyan;
+  color: white;
+  cursor: pointer;
 }
 
 #content main #start-btn {
@@ -76,9 +100,10 @@ body {
   padding: 10px;
   border-radius: 5px;
   outline-color: cyan;
-  font-size: 1rem;
+  font-size: 14px;
   color: cyan;
   background-color: rgb(71, 71, 71);
+  width: 250px;
 }
 
 #content main .input::placeholder {

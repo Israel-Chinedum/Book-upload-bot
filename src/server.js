@@ -2,6 +2,9 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import { socketConnection } from "./sockets/socket.controller.js";
+import dotenv from "dotenv";
+
+export const envConfig = dotenv.config();
 
 const app = express();
 

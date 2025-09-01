@@ -6,6 +6,8 @@ const uploadBks = document.querySelector("#upload-books");
 const restartBtn = document.querySelector("#restart-btn");
 const sheetTitle = document.querySelector("#sheet-title");
 const spreadsheetId = document.querySelector("#spreadsheet-id");
+const pathToBooks = document.querySelector("#path-to-books");
+const pathToExcelSheet = document.querySelector("#path-to-excel-sheet");
 
 const createText = (text, color = "darkcyan") => {
   const p = document.createElement("p");
@@ -22,6 +24,8 @@ startBtn.addEventListener("click", () => {
   socket.emit("start-bot", {
     sheetTitle: sheetTitle.value,
     spreadsheetId: spreadsheetId.value,
+    pathToBooks: pathToBooks.value,
+    pathToExcelSheet: pathToExcelSheet.value,
   });
   startBtn.style.display = "none";
   restartBtn.style.display = "block";
@@ -33,6 +37,8 @@ restartBtn.addEventListener("click", () => {
   socket.emit("restart-bot", {
     sheetTitle: sheetTitle.value,
     spreadsheetId: spreadsheetId.value,
+    pathToBooks: pathToBooks.value,
+    pathToExcelSheet: pathToExcelSheet.value,
   });
   uploadBks.disabled = true;
 });
