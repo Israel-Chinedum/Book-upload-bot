@@ -192,12 +192,12 @@ export class BotServices {
     );
 
     console.log("Retrieving meta data for books...");
-    socket.emit("console-msg", "Retrieving meta data for books...");
+    this.socket.emit("console-msg", "Retrieving meta data for books...");
 
     const data = await socketServe.G_sheet().getSheetData();
 
     console.log("Updating excel upload sheet...");
-    socket.emit("console-msg", "Updating excel upload sheet...");
+    this.socket.emit("console-msg", "Updating excel upload sheet...");
 
     const response = await meta.updateSheet({
       xlPath: "../book uploads.xlsx",

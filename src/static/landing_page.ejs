@@ -16,36 +16,40 @@
           <button id="start-btn">Start bot</button>
           <button id="restart-btn">restart</button>
           <button id="upload-books">Upload books</button>
-          <input
-            type="text"
-            id="sheet-title"
-            placeholder="Enter sheet title"
-            class="input"
-          />
-          <input
-            class="input"
-            type="text"
-            id="spreadsheet-id"
-            placeholder="Enter spreadsheet id"
-          />
-          <div id="path-div">
-            <div>
+          <div id="input-container">
+            <div id="first-input-div">
               <input
                 type="text"
+                id="sheet-title"
+                placeholder="Enter sheet title"
                 class="input"
-                id="path-to-books"
-                placeholder="Enter path to books"
               />
-              <button>Use previous path</button>
+              <input
+                class="input"
+                type="text"
+                id="spreadsheet-id"
+                placeholder="Enter spreadsheet id"
+              />
             </div>
-            <div>
-              <input
-                type="text"
-                class="input"
-                id="path-to-excel-sheet"
-                placeholder="Enter path to excel sheet"
-              />
-              <button>Use previous path</button>
+            <div id="path-div">
+              <div>
+                <input
+                  type="text"
+                  class="input"
+                  id="path-to-books"
+                  placeholder="Enter path to books"
+                />
+                <button>Use default path</button>
+              </div>
+              <div>
+                <input
+                  type="text"
+                  class="input"
+                  id="path-to-excel-sheet"
+                  placeholder="Enter path to excel sheet"
+                />
+                <button>Use default path</button>
+              </div>
             </div>
           </div>
         </main>

@@ -37,16 +37,16 @@ body {
   gap: 20px;
 }
 
-#content main label {
-  width: 200px;
+#content #path-div {
+  gap: 10px;
+  justify-content: center;
+  border-left: 2px solid darkcyan;
 }
 
-#content #path-div {
+#content #path-div div {
   display: flex;
-  flex-direction: column;
+  margin: 10px;
   gap: 10px;
-  padding-top: 10px;
-  border-top: 2px solid darkcyan;
 }
 
 #content #path-div button {
@@ -56,6 +56,7 @@ body {
   background-color: darkcyan;
   color: white;
   cursor: pointer;
+  width: max-content;
 }
 
 #content main #start-btn {
@@ -103,7 +104,7 @@ body {
   font-size: 14px;
   color: cyan;
   background-color: rgb(71, 71, 71);
-  width: 250px;
+  width: 200px;
 }
 
 #content main .input::placeholder {
@@ -137,4 +138,17 @@ body {
 #console::-webkit-scrollbar-thumb {
   background-color: cyan;
   border-radius: 1rem;
+}
+
+#first-input-div {
+  width: max-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+#input-container {
+  display: flex;
+  gap: 20px;
 }

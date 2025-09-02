@@ -11,12 +11,7 @@ export const socketConnection = () => {
   io.on("connection", (socket) => {
     console.log("New user connected!");
 
-    const bot = new Bot({
-      xlPath: _pathToExcelSheet,
-      path: _pathToBooks,
-      url: "https://ebookquet.com/admin",
-      socket,
-    });
+    let bot;
 
     //start-bot
     socket.on(
@@ -28,8 +23,16 @@ export const socketConnection = () => {
         pathToBooks,
         pathToExcelSheet,
       }) => {
+        console.log("PATH TO SHEET: ", process.env.PATH_TO_EXCEL_SHEET);
         _pathToBooks = pathToBooks || process.env.PATH_TO_BOOKS;
         _pathToExcelSheet = pathToExcelSheet || process.env.PATH_TO_EXCEL_SHEET;
+
+        bot = new Bot({
+          xlPath: _pathToExcelSheet,
+          path: _pathToBooks,
+          url: "https://ebookquet.com/admin",
+          socket,
+        });
 
         socketServe.startBot({
           initial,
