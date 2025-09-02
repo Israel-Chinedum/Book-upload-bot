@@ -15,7 +15,7 @@
           </header>
           <button id="start-btn">Start bot</button>
           <button id="restart-btn">restart</button>
-          <button id="upload-books">Upload books</button>
+          <button id="upload-books">Continue uploading</button>
           <div id="input-container">
             <div id="first-input-div">
               <input
@@ -39,7 +39,7 @@
                   id="path-to-books"
                   placeholder="Enter path to books"
                 />
-                <button>Use default path</button>
+                <button id="path-to-books-btn">Use default path</button>
               </div>
               <div>
                 <input
@@ -48,12 +48,26 @@
                   id="path-to-excel-sheet"
                   placeholder="Enter path to excel sheet"
                 />
-                <button>Use default path</button>
+                <button id="path-to-excel-sheet-btn">Use default path</button>
               </div>
+              <input
+                type="text"
+                class="input"
+                placeholder="Insert range"
+                id="range"
+              />
             </div>
           </div>
         </main>
-        <aside></aside>
+        <aside>
+          <p>Screenshots</p>
+          <div id="image">
+            <div id="slide-buttons">
+              <button id="prev-btn">◀ Previous</button>
+              <button id="next-btn">Next ▶</button>
+            </div>
+          </div>
+        </aside>
         <aside id="console"></aside>
       </section>
     </div>

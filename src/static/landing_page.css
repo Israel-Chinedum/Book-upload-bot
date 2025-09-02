@@ -27,6 +27,7 @@ body {
   gap: 10px;
 }
 
+/* =====MAIN STYLING===== */
 #content main {
   border: 1px solid cyan;
   border-radius: 7px;
@@ -38,9 +39,14 @@ body {
 }
 
 #content #path-div {
-  gap: 10px;
   justify-content: center;
-  border-left: 2px solid darkcyan;
+  border-left: 5px solid cyan;
+  background-color: rgb(44, 44, 44);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
 }
 
 #content #path-div div {
@@ -57,6 +63,23 @@ body {
   color: white;
   cursor: pointer;
   width: max-content;
+}
+
+#first-input-div {
+  width: max-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+#input-container {
+  display: flex;
+  gap: 20px;
+}
+
+#content main #range {
+  width: 90%;
 }
 
 #content main #start-btn {
@@ -111,12 +134,31 @@ body {
   color: cyan;
 }
 
+/* =====ASIDE STYLING===== */
 #content aside {
+  grid-row: span 2;
   border: 1px solid cyan;
   border-radius: 7px;
+  color: darkcyan;
+  padding: 10px;
 }
+
+#content aside #slide-buttons {
+  padding: 10px;
+}
+
+#content aside #slide-buttons button {
+  width: 10px;
+  width: 100px;
+  color: white;
+  border-radius: 5px;
+  background-color: darkcyan;
+  padding: 10px;
+  font-size: 14px;
+}
+
+/* =====CONSOLE STYLING===== */
 #console {
-  grid-column: span 2;
   border: 1px solid cyan;
   border-radius: 7px;
   background-color: black;
@@ -138,17 +180,4 @@ body {
 #console::-webkit-scrollbar-thumb {
   background-color: cyan;
   border-radius: 1rem;
-}
-
-#first-input-div {
-  width: max-content;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 10px;
-}
-
-#input-container {
-  display: flex;
-  gap: 20px;
 }

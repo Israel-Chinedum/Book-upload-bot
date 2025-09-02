@@ -26,17 +26,39 @@ export class GSheetData {
     return sheets;
   }
 
-  async getSheetData() {
+  async getSheetData(range) {
     const sheets = this.authorize();
+
+    let ranges;
+
+    if (range) {
+      ranges = `${this.sheetTitle}!${range}`;
+    } else {
+      console.log("Range not provided, sheet title will be used!");
+      ranges = this.sheetTitle;
+    }
+
     const res = await sheets.spreadsheets.get({
       spreadsheetId: this.spreadsheetId,
       includeGridData: true,
-      ranges: [this.sheetTitle],
+      ranges: [ranges],
     });
 
     const rows = res.data.sheets[0].data[0].rowData;
-    console.log("ROWS: ", rows);
     const sheetData = [];
+
+    let startIndex = 0;
+
+    if (range) {
+      const splitRange = range.split(":")[0];
+      let startIndexStr = "";
+      for (let i = 0; i < splitRange.split("").length; i++) {
+        if (i != 0) {
+          startIndexStr += splitRange.split("")[i];
+        }
+      }
+      startIndex = Number(startIndexStr);
+    }
 
     let i = 1;
 
@@ -64,10 +86,11 @@ export class GSheetData {
             ISBN: "",
             status: row[7].userEnteredValue.stringValue,
             genre: row[8].userEnteredValue.stringValue,
-            index: i + 1,
+            index: startIndex,
           });
         }
       }
+      startIndex++;
       i++;
     }
 
@@ -98,7 +121,7 @@ export class GSheetData {
     return isRed;
   }
 
-  async colorUploadedRows() {
+  async colorUploadedRows(socket) {
     const data = await filer.readFile();
     for (let i of JSON.parse(data)) {
       await this.setRowColors({
@@ -108,6 +131,7 @@ export class GSheetData {
       });
 
       console.log("Row", i.index, "has been colored!");
+      socket.emit("console-msg", `Row ${i.index} has been colored!`);
     }
   }
 
@@ -148,12 +172,10 @@ export class GSheetData {
         ],
       };
 
-      console.log("setting row index to red!");
       await sheets.spreadsheets.batchUpdate({
         spreadsheetId: this.spreadsheetId,
         requestBody,
       });
-      console.log("row color has been set!");
     } catch (error) {
       console.log("Error: ", error);
       console.log("An error occured while trying to set rows!");

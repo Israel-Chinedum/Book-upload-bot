@@ -8,6 +8,9 @@ const sheetTitle = document.querySelector("#sheet-title");
 const spreadsheetId = document.querySelector("#spreadsheet-id");
 const pathToBooks = document.querySelector("#path-to-books");
 const pathToExcelSheet = document.querySelector("#path-to-excel-sheet");
+const pathToBooksBtn = document.querySelector("#path-to-books-btn");
+const pathToExcelSheetBtn = document.querySelector("#path-to-excel-sheet-btn");
+const range = document.querySelector("#range");
 
 const createText = (text, color = "darkcyan") => {
   const p = document.createElement("p");
@@ -26,6 +29,7 @@ startBtn.addEventListener("click", () => {
     spreadsheetId: spreadsheetId.value,
     pathToBooks: pathToBooks.value,
     pathToExcelSheet: pathToExcelSheet.value,
+    range: range.value,
   });
   startBtn.style.display = "none";
   restartBtn.style.display = "block";
@@ -39,6 +43,7 @@ restartBtn.addEventListener("click", () => {
     spreadsheetId: spreadsheetId.value,
     pathToBooks: pathToBooks.value,
     pathToExcelSheet: pathToExcelSheet.value,
+    range: range.value,
   });
   uploadBks.disabled = true;
 });
@@ -52,7 +57,22 @@ uploadBks.addEventListener("click", () => {
   uploadBks.disabled = true;
 });
 
-socket.on("done", () => {
+pathToExcelSheetBtn.addEventListener("click", () =>
+  socket.emit("get-path-to-excel-sheet")
+);
+pathToBooksBtn.addEventListener("click", () =>
+  socket.emit("get-path-to-books")
+);
+
+socket.on("path-to-books", (data) => {
+  pathToBooks.value = data;
+});
+
+socket.on("path-to-excel-sheet", (data) => {
+  pathToExcelSheet.value = data;
+});
+
+socket.on("continue", () => {
   uploadBks.disabled = false;
 });
 

@@ -22,8 +22,8 @@ export const socketConnection = () => {
         spreadsheetId,
         pathToBooks,
         pathToExcelSheet,
+        range,
       }) => {
-        console.log("PATH TO SHEET: ", process.env.PATH_TO_EXCEL_SHEET);
         _pathToBooks = pathToBooks || process.env.PATH_TO_BOOKS;
         _pathToExcelSheet = pathToExcelSheet || process.env.PATH_TO_EXCEL_SHEET;
 
@@ -40,6 +40,7 @@ export const socketConnection = () => {
           socket,
           sheetTitle,
           spreadsheetId,
+          range,
         });
       }
     );
@@ -47,11 +48,25 @@ export const socketConnection = () => {
     //restart-bot
     socket.on(
       "restart-bot",
-      ({ sheetTitle, spreadsheetId, pathToBooks, pathToExcelSheet }) => {
+      ({ sheetTitle, spreadsheetId, pathToBooks, pathToExcelSheet, range }) => {
         _pathToBooks = pathToBooks || process.env.PATH_TO_BOOKS;
         _pathToExcelSheet = pathToExcelSheet || process.env.PATH_TO_EXCEL_SHEET;
-        socketServe.restartBot({ bot, socket, sheetTitle, spreadsheetId });
+        socketServe.restartBot({
+          bot,
+          socket,
+          sheetTitle,
+          spreadsheetId,
+          range,
+        });
       }
     );
+
+    socket.on("get-path-to-books", () => {
+      socket.emit("path-to-books", `${process.env.PATH_TO_BOOKS}`);
+    });
+
+    socket.on("get-path-to-excel-sheet", () => {
+      socket.emit("path-to-excel-sheet", `${process.env.PATH_TO_EXCEL_SHEET}`);
+    });
   });
 };

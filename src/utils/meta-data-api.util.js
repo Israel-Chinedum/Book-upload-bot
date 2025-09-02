@@ -46,7 +46,13 @@ export class MetaDataApi {
     }
   }
 
-  async updateSheet({ xlPath, data }) {
+  async updateSheet({ xlPath, data, socket }) {
+    if (!data.sheetData || !data.sheetData.length) {
+      console.log("No rows available!");
+      socket.emit("console-msg", "No rows available!");
+      return;
+    }
+
     const rows = data.sheetData;
 
     try {

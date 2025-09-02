@@ -5,6 +5,8 @@ import { socketConnection } from "./sockets/socket.controller.js";
 import dotenv from "dotenv";
 
 export const envConfig = dotenv.config();
+export let state = "running";
+export const setState = (newState) => (state = newState);
 
 const app = express();
 

@@ -4,6 +4,7 @@ import { MetaDataApi } from "../utils/meta-data-api.util.js";
 import { Filer } from "../utils/filer.util.js";
 import { socketServe } from "../sockets/socket.service.js";
 import { bestMatch } from "../utils/compare.util.js";
+import { setState, state } from "../server.js";
 
 const filer = new Filer({ path: "./proof.json" });
 const meta = new MetaDataApi();
@@ -35,7 +36,7 @@ export class BotServices {
     ]);
   }
 
-  async uploadBook() {
+  async uploadBook(range) {
     await this.page.screenshot({
       path: `./screenshots/proof-${Date.now()}.png`,
       fullPage: true,
@@ -175,14 +176,14 @@ export class BotServices {
       }
     }
 
-    Promise.all([
-      await this.page.click('text="Import All"'),
-      await this.page.waitForNavigation({ timeout: 0 }),
+    await Promise.all([
+      this.page.click('text="Import All"'),
+      this.page.waitForNavigation({ timeout: 0 }),
     ]);
 
     await filer.sign();
 
-    await socketServe.G_sheet().colorUploadedRows();
+    await socketServe.G_sheet().colorUploadedRows(this.socket);
 
     this.numberOfBooksUploaded += 10;
     console.log(`Done! ${this.numberOfBooksUploaded} have been uploaded!`);
@@ -194,7 +195,7 @@ export class BotServices {
     console.log("Retrieving meta data for books...");
     this.socket.emit("console-msg", "Retrieving meta data for books...");
 
-    const data = await socketServe.G_sheet().getSheetData();
+    const data = await socketServe.G_sheet().getSheetData(range);
 
     console.log("Updating excel upload sheet...");
     this.socket.emit("console-msg", "Updating excel upload sheet...");
@@ -202,16 +203,19 @@ export class BotServices {
     const response = await meta.updateSheet({
       xlPath: "../book uploads.xlsx",
       data,
+      socket: this.socket,
     });
 
+    if (!response) {
+      setState("paused");
+      return;
+    }
+
     await this.page.waitForTimeout(5000);
-
     this.socket.emit("console-msg", response);
-
-    this.uploadBook();
   }
 
-  async start(email, password) {
+  async start(email, password, range) {
     try {
       const browser = await chromium.launch({ headless: false });
       const context = await browser.newContext();
@@ -221,7 +225,14 @@ export class BotServices {
       this.socket.emit("console-msg", "Logging in...");
       await this.login(email, password);
       this.socket.emit("console-msg", "logged in! ✔");
-      await this.uploadBook();
+
+      while (this.numberOfBooksUploaded < 100 && state == "running") {
+        await this.uploadBook(range);
+      }
+
+      console.log("Successfully uploaded 100 books!");
+      this.socket.emit("console-msg", "Successfully uploaded 100 books!");
+      this.socket.emit("continue");
     } catch (error) {
       console.log("Error: ", error);
       this.socket.emit("console-msg", {
@@ -230,10 +241,10 @@ export class BotServices {
     }
   }
 
-  async restart(email, password) {
+  async restart(email, password, range) {
     try {
       this.page && (await this.page.close());
-      await this.start(email, password);
+      await this.start(email, password, range);
     } catch (error) {
       console.log("Error: ", error);
       this.socket.emit("console-msg", {
