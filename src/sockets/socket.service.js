@@ -1,6 +1,8 @@
 import { MetaDataApi } from "../utils/meta-data-api.util.js";
 import { GSheetData } from "../utils/G-sheet-data.util.js";
 import { state, setState } from "../server.js";
+
+export let sheetRange = "";
 const meta = new MetaDataApi();
 
 class SocketServices {
@@ -37,6 +39,8 @@ class SocketServices {
       return;
     }
 
+    sheetRange = range;
+
     console.log("Retrieving meta data for books...");
     socket.emit("console-msg", "Retrieving meta data for books...");
 
@@ -44,7 +48,7 @@ class SocketServices {
     this.spreadsheetId = spreadsheetId;
     const sheetData = this.G_sheet(sheetTitle, spreadsheetId);
 
-    const data = await sheetData.getSheetData(range);
+    const data = await sheetData.getSheetData(sheetRange);
 
     console.log("Updating excel upload sheet...");
     socket.emit("console-msg", "Updating excel upload sheet...");
@@ -91,6 +95,8 @@ class SocketServices {
       return;
     }
 
+    sheetRange = range;
+
     console.log("Retrieving meta data for books...");
     socket.emit("console-msg", "Retrieving meta data for books...");
 
@@ -98,7 +104,7 @@ class SocketServices {
     this.spreadsheetId = spreadsheetId;
     const sheetData = this.G_sheet(sheetTitle, spreadsheetId);
 
-    const data = await sheetData.getSheetData(range);
+    const data = await sheetData.getSheetData(sheetRange);
 
     console.log("Updating excel upload sheet...");
     socket.emit("console-msg", "Updating excel upload sheet...");
@@ -121,7 +127,7 @@ class SocketServices {
     console.log("restarting bot...");
     socket.emit("console-msg", "restarting bot...");
     try {
-      await bot.restart("ebookquetnetwork@gmail.com", "123456", range);
+      await bot.restart("ebookquetnetwork@gmail.com", "123456");
     } catch (error) {
       console.log("Error: ", error);
       console.log("Cannot restart bot, make sure bot has already started!");

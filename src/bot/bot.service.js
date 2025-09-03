@@ -36,7 +36,7 @@ export class BotServices {
     ]);
   }
 
-  async uploadBook(range) {
+  async uploadBook() {
     await this.page.screenshot({
       path: `./screenshots/proof-${Date.now()}.png`,
       fullPage: true,
@@ -195,7 +195,7 @@ export class BotServices {
     console.log("Retrieving meta data for books...");
     this.socket.emit("console-msg", "Retrieving meta data for books...");
 
-    const data = await socketServe.G_sheet().getSheetData(range);
+    const data = await socketServe.G_sheet().getSheetData();
 
     console.log("Updating excel upload sheet...");
     this.socket.emit("console-msg", "Updating excel upload sheet...");
@@ -215,7 +215,7 @@ export class BotServices {
     this.socket.emit("console-msg", response);
   }
 
-  async start(email, password, range) {
+  async start(email, password) {
     try {
       const browser = await chromium.launch({ headless: false });
       const context = await browser.newContext();
@@ -227,7 +227,7 @@ export class BotServices {
       this.socket.emit("console-msg", "logged in! ✔");
 
       while (this.numberOfBooksUploaded < 100 && state == "running") {
-        await this.uploadBook(range);
+        await this.uploadBook();
       }
 
       console.log("Successfully uploaded 100 books!");
@@ -241,10 +241,10 @@ export class BotServices {
     }
   }
 
-  async restart(email, password, range) {
+  async restart(email, password) {
     try {
       this.page && (await this.page.close());
-      await this.start(email, password, range);
+      await this.start(email, password);
     } catch (error) {
       console.log("Error: ", error);
       this.socket.emit("console-msg", {

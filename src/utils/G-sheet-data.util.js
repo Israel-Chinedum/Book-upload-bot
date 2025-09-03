@@ -1,5 +1,6 @@
 import { google } from "googleapis";
 import { Filer } from "./filer.util.js";
+import { sheetRange } from "../sockets/socket.service.js";
 
 const filer = new Filer({ path: "./worksheet.json" });
 
@@ -26,7 +27,7 @@ export class GSheetData {
     return sheets;
   }
 
-  async getSheetData(range) {
+  async getSheetData(range = sheetRange) {
     const sheets = this.authorize();
 
     let ranges;
@@ -48,6 +49,7 @@ export class GSheetData {
     const sheetData = [];
 
     let startIndex = 0;
+    let i;
 
     if (range) {
       const splitRange = range.split(":")[0];
@@ -58,12 +60,13 @@ export class GSheetData {
         }
       }
       startIndex = Number(startIndexStr);
+      i = 0;
+    } else {
+      i = 1;
     }
 
-    let i = 1;
-
     while (i < rows.length) {
-      const cellColor = rows[i].values[0].effectiveFormat.backgroundColor;
+      const cellColor = rows[i]?.values[0]?.effectiveFormat?.backgroundColor;
       const isRed = this.isRed(cellColor);
       if (!isRed) {
         const row = rows[i].values;
