@@ -55,6 +55,9 @@ export class MetaDataApi {
 
     const rows = data.sheetData;
 
+    let length = 10;
+    rows.length < 10 && (length = rows.length);
+
     try {
       const workbook = new ExcelJS.Workbook();
       await workbook.xlsx.readFile(xlPath);
@@ -63,7 +66,7 @@ export class MetaDataApi {
 
       let tenRows = [];
 
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < length; i++) {
         const setRow = [];
 
         for (let key of Object.keys(rows[i])) {

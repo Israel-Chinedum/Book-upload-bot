@@ -7,6 +7,13 @@ import dotenv from "dotenv";
 export const envConfig = dotenv.config();
 export let state = "running";
 export const setState = (newState) => (state = newState);
+export let _pathToBooks;
+export let _pathToExcelSheet;
+export const setPaths = ({ pathToBooks, pathToExcelSheet }) => {
+  _pathToBooks = pathToBooks || process.env.PATH_TO_BOOKS;
+  _pathToExcelSheet = pathToExcelSheet || process.env.PATH_TO_EXCEL_SHEET;
+  console.log("PATHS: ", pathToBooks, pathToExcelSheet);
+};
 
 const app = express();
 

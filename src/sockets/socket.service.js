@@ -79,8 +79,14 @@ class SocketServices {
         await bot.uploadBook();
         numberOfBooksUploaded = +10;
       }
-      console.log("Successfully uploaded 100 books!");
-      socket.emit("console-msg", "Successfully uploaded 100 books!");
+
+      if (numberOfBooksUploaded > 0) {
+        console.log(`Successfully uploaded ${numberOfBooksUploaded} books!`);
+        socket.emit(
+          "console-msg",
+          `Successfully uploaded ${numberOfBooksUploaded} books!`
+        );
+      }
       socket.emit("continue");
     }
   }

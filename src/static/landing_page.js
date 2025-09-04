@@ -53,6 +53,8 @@ uploadBks.addEventListener("click", () => {
     initial: false,
     sheetTitle: sheetTitle.value,
     spreadsheetId: spreadsheetId.value,
+    pathToBooks: pathToBooks.value,
+    pathToExcelSheet: pathToExcelSheet.value,
   });
   uploadBks.disabled = true;
 });

@@ -5,6 +5,7 @@ import { Filer } from "../utils/filer.util.js";
 import { socketServe } from "../sockets/socket.service.js";
 import { bestMatch } from "../utils/compare.util.js";
 import { setState, state } from "../server.js";
+import { _pathToBooks, _pathToExcelSheet } from "../server.js";
 
 const filer = new Filer({ path: "./proof.json" });
 const meta = new MetaDataApi();
@@ -12,16 +13,11 @@ const meta = new MetaDataApi();
 export class BotServices {
   page;
   url;
-  path;
-  xlPath;
   numOfBooksUploaded;
   socket;
 
-  constructor(page, url, path, xlPath, socket) {
-    this.page = page;
+  constructor(url, socket) {
     this.url = url;
-    this.path = path;
-    this.xlPath = xlPath;
     this.numberOfBooksUploaded = 0;
     this.socket = socket;
   }
@@ -50,9 +46,9 @@ export class BotServices {
     const fileInput = this.page.locator('input[type="file"][name="doc"]');
     await fileInput.setInputFiles("../book uploads.xlsx");
 
-    const fileNames = await getFileNames(this.path, this.socket);
-    const genre = await meta.getGenre(this.xlPath, this.socket);
-    const desc = await meta.getDesc(this.xlPath, this.socket);
+    const fileNames = await getFileNames(_pathToBooks, this.socket);
+    const genre = await meta.getGenre(_pathToExcelSheet, this.socket);
+    const desc = await meta.getDesc(_pathToExcelSheet, this.socket);
 
     await this.page.waitForTimeout(5000);
 
@@ -118,7 +114,7 @@ export class BotServices {
           if (pdf.length > 1) {
             mainPDF = bestMatch(pdf, desc[i]);
           }
-          await fileInputSrc.setInputFiles(`${this.path}/${mainPDF}`);
+          await fileInputSrc.setInputFiles(`${_pathToBooks}/${mainPDF}`);
           console.log({ fileName, "OG-fileName": mainPDF, index: i });
           this.socket.emit("console-msg", {
             fileName,
@@ -138,7 +134,7 @@ export class BotServices {
           if (photo.length > 1) {
             mainPhoto = bestMatch(photo, desc[i]);
           }
-          await fileInputPhoto.setInputFiles(`${this.path}/${mainPhoto}`);
+          await fileInputPhoto.setInputFiles(`${_pathToBooks}/${mainPhoto}`);
           console.log({ fileName, "OG-fileName": mainPhoto, index: i });
           this.socket.emit("console-msg", {
             fileName,
@@ -230,8 +226,15 @@ export class BotServices {
         await this.uploadBook();
       }
 
-      console.log("Successfully uploaded 100 books!");
-      this.socket.emit("console-msg", "Successfully uploaded 100 books!");
+      if (this.numOfBooksUploaded > 0) {
+        console.log(
+          `Successfully uploaded ${this.numberOfBooksUploaded} books!`
+        );
+        this.socket.emit(
+          "console-msg",
+          `Successfully uploaded ${this.numberOfBooksUploaded} books!`
+        );
+      }
       this.socket.emit("continue");
     } catch (error) {
       console.log("Error: ", error);

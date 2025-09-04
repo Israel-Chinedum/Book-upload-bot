@@ -1,16 +1,11 @@
 import { BotServices } from "./bot.service.js";
 
 export class Bot {
-  xlPath;
-  path;
-  page;
   botServe;
   socket;
 
-  constructor({ xlPath, path, url, socket }) {
-    this.xlPath = xlPath;
-    this.path = path;
-    this.botServe = new BotServices(this.page, url, path, xlPath, socket);
+  constructor({ url, socket }) {
+    this.botServe = new BotServices(url, socket);
     this.socket = socket;
   }
 

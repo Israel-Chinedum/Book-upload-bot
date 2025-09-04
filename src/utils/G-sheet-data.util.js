@@ -73,7 +73,7 @@ export class GSheetData {
         if (
           row[0]?.userEnteredValue &&
           row[1]?.userEnteredValue &&
-          row[2]?.userEnteredValue &&
+          // row[2]?.userEnteredValue &&
           row[4]?.userEnteredValue &&
           row[5]?.userEnteredValue &&
           row[7]?.userEnteredValue &&
@@ -82,7 +82,7 @@ export class GSheetData {
           sheetData.push({
             book_title: row[0].userEnteredValue.stringValue,
             author: row[1].userEnteredValue.stringValue,
-            description: row[2].userEnteredValue.stringValue,
+            description: row[2]?.userEnteredValue?.stringValue,
             year: "",
             type: row[4].userEnteredValue.stringValue,
             price: row[5].userEnteredValue.numberValue,

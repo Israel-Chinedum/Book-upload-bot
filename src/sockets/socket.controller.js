@@ -1,17 +1,18 @@
 import { io } from "../server.js";
 import { socketServe } from "./socket.service.js";
 import { Bot } from "../bot/bot.controller.js";
-import { envConfig } from "../server.js";
+import { envConfig, setPaths } from "../server.js";
 
 export const socketConnection = () => {
   envConfig;
-  let _pathToBooks;
-  let _pathToExcelSheet;
 
   io.on("connection", (socket) => {
     console.log("New user connected!");
 
-    let bot;
+    const bot = new Bot({
+      url: "https://ebookquet.com/admin",
+      socket,
+    });
 
     //start-bot
     socket.on(
@@ -24,15 +25,7 @@ export const socketConnection = () => {
         pathToExcelSheet,
         range,
       }) => {
-        _pathToBooks = pathToBooks || process.env.PATH_TO_BOOKS;
-        _pathToExcelSheet = pathToExcelSheet || process.env.PATH_TO_EXCEL_SHEET;
-
-        bot = new Bot({
-          xlPath: _pathToExcelSheet,
-          path: _pathToBooks,
-          url: "https://ebookquet.com/admin",
-          socket,
-        });
+        setPaths({ pathToBooks, pathToExcelSheet });
 
         socketServe.startBot({
           initial,
@@ -49,8 +42,7 @@ export const socketConnection = () => {
     socket.on(
       "restart-bot",
       ({ sheetTitle, spreadsheetId, pathToBooks, pathToExcelSheet, range }) => {
-        _pathToBooks = pathToBooks || process.env.PATH_TO_BOOKS;
-        _pathToExcelSheet = pathToExcelSheet || process.env.PATH_TO_EXCEL_SHEET;
+        setPaths({ pathToBooks, pathToExcelSheet });
         socketServe.restartBot({
           bot,
           socket,
