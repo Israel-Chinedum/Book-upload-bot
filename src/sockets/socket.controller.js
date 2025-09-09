@@ -2,6 +2,7 @@ import { io } from "../server.js";
 import { socketServe } from "./socket.service.js";
 import { Bot } from "../bot/bot.controller.js";
 import { envConfig, setPaths } from "../server.js";
+import * as fs from "fs/promises";
 
 export const socketConnection = () => {
   envConfig;
@@ -13,6 +14,15 @@ export const socketConnection = () => {
       url: "https://ebookquet.com/admin",
       socket,
     });
+
+    (async () => {
+      try {
+        const screenshots = await fs.readdir("./screenshots");
+      } catch (error) {
+        console.log("Error: ", error);
+        console.log("An error occured while trying to read from screenshots/");
+      }
+    })();
 
     //start-bot
     socket.on(
