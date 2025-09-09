@@ -1,5 +1,6 @@
 import ExcelJS from "exceljs";
 import { Filer } from "./filer.util.js";
+import { envConfig } from "../server.js";
 
 const filer = new Filer({ path: "./worksheet.json" });
 
@@ -47,6 +48,8 @@ export class MetaDataApi {
   }
 
   async updateSheet({ xlPath, data, socket }) {
+    envConfig;
+
     if (!data.sheetData || !data.sheetData.length) {
       console.log("No rows available!");
       socket.emit("console-msg", "No rows available!");
@@ -64,17 +67,19 @@ export class MetaDataApi {
       const sheet = workbook.getWorksheet(1);
 
       let tenRows = [];
+      let keyLength = 0;
 
       for (let i = 0; i < length; i++) {
         const setRow = [];
         if (i + 1 > rows.length) {
-          for (let key of Object.keys(rows[i])) {
+          for (let i of keyLength) {
             key != "index" && setRow.push(null);
           }
         } else {
           for (let key of Object.keys(rows[i])) {
             key != "index" && setRow.push(rows[i][`${key}`]);
           }
+          keyLength = Object.keys(rows[i]).length;
         }
 
         sheet.getRow(i + 2).values = setRow;
@@ -88,7 +93,7 @@ export class MetaDataApi {
         console.log("Error: ", error);
       }
 
-      await workbook.xlsx.writeFile("../book uploads.xlsx");
+      await workbook.xlsx.writeFile(xlPath);
       console.log("Sheet has been updated!");
       return "Sheet has been updated!";
     } catch (error) {

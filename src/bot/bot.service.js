@@ -44,7 +44,7 @@ export class BotServices {
     ]);
 
     const fileInput = this.page.locator('input[type="file"][name="doc"]');
-    await fileInput.setInputFiles("../book uploads.xlsx");
+    await fileInput.setInputFiles(_pathToExcelSheet);
 
     const fileNames = await getFileNames(_pathToBooks, this.socket);
     const genre = await meta.getGenre(_pathToExcelSheet, this.socket);
@@ -52,7 +52,11 @@ export class BotServices {
 
     await this.page.waitForTimeout(5000);
 
-    for (let i = 0; i < 10; i++) {
+    const form = await this.page.locator("form.preview");
+    const formChildren = await form.locator(":scope > .item");
+    const count = await formChildren.count();
+
+    for (let i = 0; i < count; i++) {
       console.log("I: ", i);
       const fileInputPhoto = this.page.locator(
         `input[name="import[${i}][photo]"]`
@@ -197,7 +201,7 @@ export class BotServices {
     this.socket.emit("console-msg", "Updating excel upload sheet...");
 
     const response = await meta.updateSheet({
-      xlPath: "../book uploads.xlsx",
+      xlPath: _pathToExcelSheet,
       data,
       socket: this.socket,
     });

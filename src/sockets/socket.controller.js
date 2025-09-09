@@ -45,6 +45,7 @@ export const socketConnection = () => {
           sheetTitle,
           spreadsheetId,
           range,
+          pathToExcelSheet,
         });
       }
     );
@@ -60,6 +61,7 @@ export const socketConnection = () => {
           sheetTitle,
           spreadsheetId,
           range,
+          pathToExcelSheet,
         });
       }
     );

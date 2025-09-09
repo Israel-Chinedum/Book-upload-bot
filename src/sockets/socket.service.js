@@ -29,6 +29,7 @@ class SocketServices {
     sheetTitle,
     spreadsheetId,
     range,
+    pathToExcelSheet,
   }) {
     if (!sheetTitle || !spreadsheetId) {
       console.log("Sheet title or spreadsheet id not provided!");
@@ -54,7 +55,7 @@ class SocketServices {
     socket.emit("console-msg", "Updating excel upload sheet...");
 
     const response = await meta.updateSheet({
-      xlPath: "../book uploads.xlsx",
+      xlPath: pathToExcelSheet,
       data,
       socket,
     });
@@ -91,7 +92,14 @@ class SocketServices {
     }
   }
 
-  async restartBot({ bot, socket, sheetTitle, spreadsheetId, range }) {
+  async restartBot({
+    bot,
+    socket,
+    sheetTitle,
+    spreadsheetId,
+    range,
+    pathToExcelSheet,
+  }) {
     if (!sheetTitle || !spreadsheetId) {
       console.log("Sheet title or spreadsheet id not provided!");
       socket.emit(
@@ -116,7 +124,7 @@ class SocketServices {
     socket.emit("console-msg", "Updating excel upload sheet...");
 
     const response = await meta.updateSheet({
-      xlPath: "../book uploads.xlsx",
+      xlPath: pathToExcelSheet,
       data,
       socket,
     });

@@ -133,6 +133,11 @@ body {
   color: cyan;
 }
 
+#bot-buttons {
+  display: flex;
+  align-items: center;
+}
+
 /* =====ASIDE STYLING===== */
 #content aside {
   grid-row: span 2;
