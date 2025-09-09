@@ -15,14 +15,15 @@ export const socketConnection = () => {
       socket,
     });
 
-    (async () => {
-      try {
-        const screenshots = await fs.readdir("./screenshots");
-      } catch (error) {
-        console.log("Error: ", error);
-        console.log("An error occured while trying to read from screenshots/");
-      }
-    })();
+    // SHOULD WORK ON THIS LATER
+    // (async () => {
+    //   try {
+    //     const screenshots = await fs.readdir("./screenshots");
+    //   } catch (error) {
+    //     console.log("Error: ", error);
+    //     console.log("An error occured while trying to read from screenshots/");
+    //   }
+    // })();
 
     //start-bot
     socket.on(

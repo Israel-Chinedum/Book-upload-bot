@@ -56,7 +56,6 @@ export class MetaDataApi {
     const rows = data.sheetData;
 
     let length = 10;
-    rows.length < 10 && (length = rows.length);
 
     try {
       const workbook = new ExcelJS.Workbook();
@@ -68,10 +67,16 @@ export class MetaDataApi {
 
       for (let i = 0; i < length; i++) {
         const setRow = [];
-
-        for (let key of Object.keys(rows[i])) {
-          key != "index" && setRow.push(rows[i][`${key}`]);
+        if (i + 1 > rows.length) {
+          for (let key of Object.keys(rows[i])) {
+            key != "index" && setRow.push(null);
+          }
+        } else {
+          for (let key of Object.keys(rows[i])) {
+            key != "index" && setRow.push(rows[i][`${key}`]);
+          }
         }
+
         sheet.getRow(i + 2).values = setRow;
         sheet.getRow(i + 2).commit();
         tenRows.push(rows[i]);
