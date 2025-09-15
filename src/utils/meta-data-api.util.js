@@ -72,14 +72,14 @@ export class MetaDataApi {
       for (let i = 0; i < length; i++) {
         const setRow = [];
         if (i + 1 > rows.length) {
-          for (let i of keyLength) {
-            key != "index" && setRow.push(null);
+          for (let i = 0; i < keyLength; i++) {
+            setRow.push(null);
           }
         } else {
           for (let key of Object.keys(rows[i])) {
             key != "index" && setRow.push(rows[i][`${key}`]);
           }
-          keyLength = Object.keys(rows[i]).length;
+          keyLength = Object.keys(rows[i]).length - 1;
         }
 
         sheet.getRow(i + 2).values = setRow;

@@ -74,8 +74,8 @@ export class GSheetData {
           row[0]?.userEnteredValue &&
           row[1]?.userEnteredValue &&
           // row[2]?.userEnteredValue &&
-          row[4]?.userEnteredValue &&
-          row[5]?.userEnteredValue &&
+          // row[4]?.userEnteredValue &&
+          // row[5]?.userEnteredValue &&
           row[7]?.userEnteredValue &&
           row[8]?.userEnteredValue
         ) {
@@ -84,8 +84,8 @@ export class GSheetData {
             author: row[1].userEnteredValue.stringValue,
             description: row[2]?.userEnteredValue?.stringValue,
             year: "",
-            type: row[4].userEnteredValue.stringValue,
-            price: row[5].userEnteredValue.numberValue,
+            type: "FREE",
+            price: 0,
             ISBN: "",
             status: row[7].userEnteredValue.stringValue,
             genre: row[8].userEnteredValue.stringValue,
@@ -127,12 +127,13 @@ export class GSheetData {
   async colorUploadedRows(socket) {
     const data = await filer.readFile();
     for (let i of JSON.parse(data)) {
-      await this.setRowColors({
-        startRowIndex: i.index - 1,
-        endRowIndex: i.index,
-        backgroundColor: { red: 1 },
-      });
-
+      if (i) {
+        await this.setRowColors({
+          startRowIndex: i.index - 1,
+          endRowIndex: i.index,
+          backgroundColor: { red: 1 },
+        });
+      }
       console.log("Row", i.index, "has been colored!");
       socket.emit("console-msg", `Row ${i.index} has been colored!`);
     }

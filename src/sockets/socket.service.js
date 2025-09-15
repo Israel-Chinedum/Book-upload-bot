@@ -1,6 +1,6 @@
 import { MetaDataApi } from "../utils/meta-data-api.util.js";
 import { GSheetData } from "../utils/G-sheet-data.util.js";
-import { state, setState } from "../server.js";
+import { state, setState, setSheetTitle } from "../server.js";
 
 export let sheetRange = "";
 const meta = new MetaDataApi();
@@ -39,6 +39,9 @@ class SocketServices {
       );
       return;
     }
+
+    //SET SHEET TITLE FOR PROOF.JSON
+    setSheetTitle(sheetTitle);
 
     sheetRange = range;
 
@@ -108,6 +111,9 @@ class SocketServices {
       );
       return;
     }
+
+    //SET SHEET TITLE FOR PROOF.JSON
+    setSheetTitle(sheetTitle);
 
     sheetRange = range;
 
