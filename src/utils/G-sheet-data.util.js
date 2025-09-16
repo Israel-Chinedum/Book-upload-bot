@@ -76,7 +76,7 @@ export class GSheetData {
           // row[2]?.userEnteredValue &&
           // row[4]?.userEnteredValue &&
           // row[5]?.userEnteredValue &&
-          row[7]?.userEnteredValue &&
+          // row[7]?.userEnteredValue &&
           row[8]?.userEnteredValue
         ) {
           sheetData.push({
@@ -87,7 +87,7 @@ export class GSheetData {
             type: "FREE",
             price: 0,
             ISBN: "",
-            status: row[7].userEnteredValue.stringValue,
+            status: "ACTIVE",
             genre: row[8].userEnteredValue.stringValue,
             index: startIndex,
           });
