@@ -1,6 +1,7 @@
 import { google } from "googleapis";
 import { Filer } from "./filer.util.js";
 import { sheetRange } from "../sockets/socket.service.js";
+import { setState } from "../server.js";
 
 const filer = new Filer({ path: "./worksheet.json" });
 
@@ -133,9 +134,22 @@ export class GSheetData {
           endRowIndex: i.index,
           backgroundColor: { red: 1 },
         });
+        console.log("Row", i.index, "has been colored!");
+        socket.emit("console-msg", `Row ${i.index} has been colored!`);
+      } else {
+        console.log("Since i is null, book uploads may have ended!");
+        console.log("Now pausing bot operations!");
+        setState("paused");
+        socket.emit(
+          "console-msg",
+          "range reached! bot operations have been paused!"
+        );
+        socket.emit("continue");
+        socket.emit(
+          'Click on the "continue uploading" button above if you wish to continue!'
+        );
+        return;
       }
-      console.log("Row", i.index, "has been colored!");
-      socket.emit("console-msg", `Row ${i.index} has been colored!`);
     }
   }
 

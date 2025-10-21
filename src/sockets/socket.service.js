@@ -1,6 +1,7 @@
 import { MetaDataApi } from "../utils/meta-data-api.util.js";
 import { GSheetData } from "../utils/G-sheet-data.util.js";
 import { state, setState, setSheetTitle } from "../server.js";
+import { nobku } from "../bot/bot.service.js";
 
 export let sheetRange = "";
 const meta = new MetaDataApi();
@@ -52,46 +53,58 @@ class SocketServices {
     this.spreadsheetId = spreadsheetId;
     const sheetData = this.G_sheet(sheetTitle, spreadsheetId);
 
-    const data = await sheetData.getSheetData(sheetRange);
+    try {
+      const data = await sheetData.getSheetData(sheetRange);
 
-    console.log("Updating excel upload sheet...");
-    socket.emit("console-msg", "Updating excel upload sheet...");
+      console.log("Updating excel upload sheet...");
+      socket.emit("console-msg", "Updating excel upload sheet...");
 
-    const response = await meta.updateSheet({
-      xlPath: pathToExcelSheet,
-      data,
-      socket,
-    });
+      const response = await meta.updateSheet({
+        xlPath: pathToExcelSheet,
+        data,
+        socket,
+      });
 
-    if (!response) {
-      setState("paused");
-      return;
-    } else {
-      setState("running");
-    }
-
-    socket.emit("console-msg", response);
-
-    if (initial) {
-      console.log("starting bot...");
-      socket.emit("console-msg", "Starting bot...");
-      bot.start("ebookquetnetwork@gmail.com", "123456");
-    } else {
-      socket.emit("console-msg", "uploading...");
-      let numberOfBooksUploaded = 0;
-      while (numberOfBooksUploaded < 100 && state == "running") {
-        await bot.uploadBook();
-        numberOfBooksUploaded = +10;
+      if (!response) {
+        setState("paused");
+        return;
+      } else {
+        setState("running");
       }
 
-      if (numberOfBooksUploaded > 0) {
-        console.log(`Successfully uploaded ${numberOfBooksUploaded} books!`);
-        socket.emit(
-          "console-msg",
-          `Successfully uploaded ${numberOfBooksUploaded} books!`
-        );
+      socket.emit("console-msg", response);
+
+      if (initial) {
+        console.log("starting bot...");
+        socket.emit("console-msg", "Starting bot...");
+        bot.start("ebookquetnetwork@gmail.com", "123456");
+      } else {
+        socket.emit("console-msg", "uploading...");
+        if (nobku >= 100) {
+          nobku = 0;
+        }
+        while (nobku < 100 && state == "running") {
+          await bot.uploadBook();
+          numberOfBooksUploaded = +10;
+        }
+
+        if (numberOfBooksUploaded > 0) {
+          console.log(`Successfully uploaded ${numberOfBooksUploaded} books!`);
+          socket.emit(
+            "console-msg",
+            `Successfully uploaded ${numberOfBooksUploaded} books!`
+          );
+        }
+        socket.emit("continue");
       }
-      socket.emit("continue");
+    } catch {
+      console.log(
+        "An error occured whild trying to get sheet data, please make sure you have an internet connection!"
+      );
+      socket.emit("console-msg", {
+        error:
+          "An error occured whild trying to get sheet data, please make sure you have an internet connection!",
+      });
     }
   }
 
@@ -124,37 +137,47 @@ class SocketServices {
     this.spreadsheetId = spreadsheetId;
     const sheetData = this.G_sheet(sheetTitle, spreadsheetId);
 
-    const data = await sheetData.getSheetData(sheetRange);
-
-    console.log("Updating excel upload sheet...");
-    socket.emit("console-msg", "Updating excel upload sheet...");
-
-    const response = await meta.updateSheet({
-      xlPath: pathToExcelSheet,
-      data,
-      socket,
-    });
-
-    if (!response) {
-      setState("paused");
-      return;
-    } else {
-      setState("running");
-    }
-
-    socket.emit("console-msg", response);
-
-    console.log("restarting bot...");
-    socket.emit("console-msg", "restarting bot...");
     try {
-      await bot.restart("ebookquetnetwork@gmail.com", "123456");
-    } catch (error) {
-      console.log("Error: ", error);
-      console.log("Cannot restart bot, make sure bot has already started!");
-      socket.emit(
-        "console-msg",
-        "Cannot restart bot, make sure bot has already started!"
+      const data = await sheetData.getSheetData(sheetRange);
+
+      console.log("Updating excel upload sheet...");
+      socket.emit("console-msg", "Updating excel upload sheet...");
+
+      const response = await meta.updateSheet({
+        xlPath: pathToExcelSheet,
+        data,
+        socket,
+      });
+
+      if (!response) {
+        setState("paused");
+        return;
+      } else {
+        setState("running");
+      }
+
+      socket.emit("console-msg", response);
+
+      console.log("restarting bot...");
+      socket.emit("console-msg", "restarting bot...");
+      try {
+        await bot.restart("ebookquetnetwork@gmail.com", "123456");
+      } catch (error) {
+        console.log("Error: ", error);
+        console.log("Cannot restart bot, make sure bot has already started!");
+        socket.emit(
+          "console-msg",
+          "Cannot restart bot, make sure bot has already started!"
+        );
+      }
+    } catch {
+      console.log(
+        "An error occured whild trying to get sheet data, please make sure you have an internet connection!"
       );
+      socket.emit("console-msg", {
+        error:
+          "An error occured whild trying to get sheet data, please make sure you have an internet connection!",
+      });
     }
   }
 }

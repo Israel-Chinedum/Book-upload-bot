@@ -9,6 +9,7 @@ import { _pathToBooks, _pathToExcelSheet } from "../server.js";
 
 const filer = new Filer({ path: "./proof.json" });
 const meta = new MetaDataApi();
+export let nobku = 0; //nobku stands for number of books uploaded or numOfBooksUploaded;
 
 export class BotServices {
   page;
@@ -22,6 +23,7 @@ export class BotServices {
     this.socket = socket;
   }
 
+  //=====LOGIN METHOD=====
   async login(email, password) {
     await this.page.goto(this.url);
     await this.page.fill('input[name="email"]', email);
@@ -32,6 +34,7 @@ export class BotServices {
     ]);
   }
 
+  //=====UPLOAD METHOD=====
   async uploadBook() {
     await this.page.screenshot({
       path: `./screenshots/proof-${Date.now()}.png`,
@@ -49,6 +52,7 @@ export class BotServices {
     const fileNames = await getFileNames(_pathToBooks, this.socket);
     const genre = await meta.getGenre(_pathToExcelSheet, this.socket);
     const desc = await meta.getDesc(_pathToExcelSheet, this.socket);
+    const author = await meta.getAuthor(_pathToExcelSheet, this.socket);
 
     await this.page.waitForTimeout(5000);
 
@@ -72,41 +76,53 @@ export class BotServices {
       if (fileName) {
         const pdf = fileNames.filter((name) => {
           if (
-            name.toLowerCase().includes(fileName.toLowerCase()) &&
-            name.toLowerCase().endsWith(".pdf")
+            name.trim().toLowerCase().includes(fileName.trim().toLowerCase()) &&
+            name.trim().toLowerCase().endsWith(".pdf")
           ) {
             return name;
           }
           if (
-            `The ${name}`.toLowerCase().includes(fileName.toLowerCase()) &&
-            name.toLowerCase().endsWith(".pdf")
+            `The ${name}`
+              .trim()
+              .toLowerCase()
+              .includes(fileName.trim().toLowerCase()) &&
+            name.trim().toLowerCase().endsWith(".pdf")
           ) {
             return name;
           }
 
           if (
-            `A ${name}`.toLowerCase().includes(fileName.toLowerCase()) &&
-            name.toLowerCase().endsWith(".pdf")
+            `A ${name}`
+              .trim()
+              .toLowerCase()
+              .includes(fileName.trim().toLowerCase()) &&
+            name.trim().toLowerCase().endsWith(".pdf")
           ) {
             return name;
           }
         });
         const photo = fileNames.filter((name) => {
           if (
-            name.toLowerCase().includes(fileName.toLowerCase()) &&
-            !name.toLowerCase().endsWith(".pdf")
+            name.trim().toLowerCase().includes(fileName.trim().toLowerCase()) &&
+            !name.trim().toLowerCase().endsWith(".pdf")
           ) {
             return name;
           }
           if (
-            `The ${name}`.toLowerCase().includes(fileName.toLowerCase()) &&
-            !name.toLowerCase().endsWith(".pdf")
+            `The ${name}`
+              .trim()
+              .toLowerCase()
+              .includes(fileName.trim().toLowerCase()) &&
+            !name.trim().toLowerCase().endsWith(".pdf")
           ) {
             return name;
           }
           if (
-            `A ${name}`.toLowerCase().includes(fileName.toLowerCase()) &&
-            !name.toLowerCase().endsWith(".pdf")
+            `A ${name}`
+              .trim()
+              .toLowerCase()
+              .includes(fileName.trim().toLowerCase()) &&
+            !name.trim().toLowerCase().endsWith(".pdf")
           ) {
             return name;
           }
@@ -116,7 +132,13 @@ export class BotServices {
         if (pdf.length) {
           let mainPDF = pdf[0];
           if (pdf.length > 1) {
-            mainPDF = bestMatch(pdf, desc[i]);
+            console.log("PDF: ", pdf);
+            mainPDF = bestMatch({
+              argArr: pdf,
+              desc: desc[i],
+              author: author[i],
+            });
+            console.log("mainPDF: ", mainPDF);
           }
           await fileInputSrc.setInputFiles(`${_pathToBooks}/${mainPDF}`);
           console.log({ fileName, "OG-fileName": mainPDF, index: i });
@@ -136,7 +158,11 @@ export class BotServices {
         if (photo.length) {
           let mainPhoto = photo[0];
           if (photo.length > 1) {
-            mainPhoto = bestMatch(photo, desc[i]);
+            mainPhoto = bestMatch({
+              argArr: photo,
+              desc: desc[i],
+              author: author[i],
+            });
           }
           await fileInputPhoto.setInputFiles(`${_pathToBooks}/${mainPhoto}`);
           console.log({ fileName, "OG-fileName": mainPhoto, index: i });
@@ -159,7 +185,7 @@ export class BotServices {
           .allTextContents();
 
         const currGenre = options.find((opt) =>
-          opt.toLowerCase().includes(genre[i].toLowerCase().trim())
+          genre[i].toLowerCase().trim().includes(opt.toLowerCase())
         );
 
         if (currGenre) {
@@ -185,7 +211,9 @@ export class BotServices {
 
     await socketServe.G_sheet().colorUploadedRows(this.socket);
 
-    this.numberOfBooksUploaded += 10;
+    this.numberOfBooksUploaded += genre.length;
+    nobku += this.numOfBooksUploaded;
+    console.log("GENRE LENGTH: ", genre.length);
     console.log(`Done! ${this.numberOfBooksUploaded} have been uploaded!`);
     this.socket.emit(
       "console-msg",
@@ -215,6 +243,7 @@ export class BotServices {
     this.socket.emit("console-msg", response);
   }
 
+  //=====START BOT METHOD=====
   async start(email, password) {
     try {
       const browser = await chromium.launch({ headless: false });
@@ -236,7 +265,11 @@ export class BotServices {
         );
         this.socket.emit(
           "console-msg",
-          `Successfully uploaded ${this.numberOfBooksUploaded} books!`
+          `Successfully uploaded ${this.numberOfBooksUploaded} books and bot operations have been paused!`
+        );
+        this.socket.emit(
+          "console-msg",
+          'If you wish to continue click on the "continue uploading button above!"'
         );
       }
       this.socket.emit("continue");
@@ -248,6 +281,7 @@ export class BotServices {
     }
   }
 
+  //=====RESTART BOT METHOD=====
   async restart(email, password) {
     try {
       this.page && (await this.page.close());

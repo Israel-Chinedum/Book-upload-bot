@@ -1,7 +1,6 @@
 import { socketServe } from "./socket.service.js";
 import { Bot } from "../bot/bot.controller.js";
 import { envConfig, setPaths } from "../server.js";
-import * as fs from "fs/promises";
 
 export const socketConnection = (io) => {
   envConfig;

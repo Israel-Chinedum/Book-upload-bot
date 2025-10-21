@@ -26,24 +26,56 @@ export class MetaDataApi {
     }
   }
 
+  async getAuthor(xlPath, socket) {
+    try {
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.readFile(xlPath);
+
+      const sheet = workbook.getWorksheet(1);
+      const authors = [];
+
+      sheet.eachRow((row, rowNumber) => {
+        if (rowNumber != 1) {
+          if (row.values[2]) {
+            authors.push(row.values[2]);
+          } else {
+            throw new Error("unable to get author as the cell may be empty!");
+          }
+        }
+      });
+      return authors;
+    } catch (error) {
+      console.log("Error: ", error);
+      socket.emit("console-msg", "Error: unable to get author for best match!");
+    }
+  }
+
   async getDesc(xlPath, socket) {
     try {
       const workbook = new ExcelJS.Workbook();
       await workbook.xlsx.readFile(xlPath);
 
       const sheet = workbook.getWorksheet(1);
-
       const descArr = [];
 
       sheet.eachRow((row, rowNumber) => {
         if (rowNumber != 1) {
-          descArr.push(row.values[2]);
+          if (row.values[3]) {
+            descArr.push(row.values[3]);
+          } else {
+            throw new Error(
+              "unable to get description as the cell may be empty!"
+            );
+          }
         }
       });
       return descArr;
     } catch (error) {
       console.log("Error: ", error);
-      socket.emit("console-msg", "Error: unable to get worksheet data!");
+      socket.emit(
+        "console-msg",
+        "Error: unable to get description for best match!"
+      );
     }
   }
 
