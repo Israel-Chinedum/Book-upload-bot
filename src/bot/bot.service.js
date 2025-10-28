@@ -54,7 +54,7 @@ export class BotServices {
     const desc = await meta.getDesc(_pathToExcelSheet, this.socket);
     const author = await meta.getAuthor(_pathToExcelSheet, this.socket);
 
-    await this.page.waitForTimeout(5000);
+    await this.page.waitForSelector("form.preview");
 
     const form = await this.page.locator("form.preview");
     const formChildren = await form.locator(":scope > .item");
