@@ -66,8 +66,8 @@ export class Filer {
           data: JSON.stringify([JSON.parse(worksheetData)]),
         });
       } else {
-        const proofData = await this.readFile("./proof.json");
-        const jsonData = JSON.parse(proofData);
+        // const proofData = await this.readFile("./proof.json");
+        const jsonData = JSON.parse(data);
         jsonData.push(JSON.parse(worksheetData));
         await this.writeFile({
           path: "./proof.json",

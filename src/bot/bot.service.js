@@ -54,7 +54,9 @@ export class BotServices {
     const desc = await meta.getDesc(_pathToExcelSheet, this.socket);
     const author = await meta.getAuthor(_pathToExcelSheet, this.socket);
 
-    await this.page.waitForTimeout(5000);
+    await this.page.waitForNavigation({ timeout: 0 });
+    await this.page.waitForSelector("form.preview");
+    this.page.waitForTimeout(5000);
 
     const form = await this.page.locator("form.preview");
     const formChildren = await form.locator(":scope > .item");
@@ -204,10 +206,13 @@ export class BotServices {
 
     await Promise.all([
       this.page.click('text="Import All"'),
+      console.log("Waiting for navigation..."),
       this.page.waitForNavigation({ timeout: 0 }),
     ]);
 
+    console.log("About to sign proof...");
     await filer.sign();
+    console.log("Done signing proof");
 
     await socketServe.G_sheet().colorUploadedRows(this.socket);
 
