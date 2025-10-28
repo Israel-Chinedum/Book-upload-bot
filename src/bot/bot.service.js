@@ -205,9 +205,9 @@ export class BotServices {
     }
 
     await Promise.all([
+      this.page.waitForNavigation({ timeout: 0 }),
       this.page.click('text="Import All"'),
       console.log("Waiting for navigation..."),
-      this.page.waitForNavigation({ timeout: 0 }),
     ]);
 
     console.log("About to sign proof...");
